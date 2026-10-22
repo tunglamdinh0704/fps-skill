@@ -77,7 +77,7 @@ SCOPE_CONFIG = {
     "AK-47": {"levels": [1.25], "dark": False},
     "M416": {"levels": [1.25], "dark": False},
     "M24": {"levels": [2.5], "dark": True},
-    "AWM": {"levels": [2.5, 5.0], "dark": True},
+    "AWM": {"levels": [2.5], "dark": True},
 }
 SCOPE_WEAPONS = tuple(SCOPE_CONFIG)
 
@@ -1047,22 +1047,28 @@ def update_enemies(dt):
         dx, dy = player.x - e.x, player.y - e.y
         dist = math.hypot(dx, dy)
         if dist >= 900:
+            e.update(dt)
             continue
         e.angle = math.atan2(dy, dx)
         if line_blocked(e.x, e.y, player.x, player.y) or smoke_blocks(e.x, e.y, player.x, player.y):
+            e.update(dt)
             continue
         if dist > 450:
             e.move(math.cos(e.angle) * e.speed * dt, math.sin(e.angle) * e.speed * dt, walls)
+            e.is_moving = True
         elif dist < 220:
             e.move(-math.cos(e.angle) * e.speed * dt, -math.sin(e.angle) * e.speed * dt, walls)
+            e.is_moving = True
         if now - e.last_shot >= e.fire_delay:
             e.last_shot = now
+            e.muzzle_flash_timer = 0.1
             if (pygame.time.get_ticks() % 1000) / 1000.0 <= max(0.20, 0.75 - dist / 1300):
                 hp_before = player.hp
                 rnd = random.random()
                 player.damage(55 if rnd < 0.15 else (18 if rnd > 0.85 else 24))
                 if player.hp < hp_before:
                     hit_flash_timer = 0.15
+        e.update(dt)
 
 def draw_pickup_prompt():
     item, _ = get_nearest_dropped_weapon(90)

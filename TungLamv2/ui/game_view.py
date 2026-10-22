@@ -175,56 +175,13 @@ class GameView:
                 bw, bh = max(8, int(size * 0.45)), size
                 btop = horizon + int(bh * 0.5) - bh
 
-                head_h = max(3, int(bh * 0.22))
-                body_h = max(4, int(bh * 0.43))
-                leg_h = max(3, bh - head_h - body_h)
-
-                head_y = btop
-                body_y = btop + head_h
-                leg_y = body_y + body_h
-
-                # --- 1. CHÂN (LEGS) ---
-                leg_w = max(2, int(bw * 0.38))
-                gap = max(1, int(bw * 0.08))
-                pygame.draw.rect(self.screen, (40, 44, 52), (int(sx - leg_w - gap // 2), int(leg_y), leg_w, leg_h))
-                pygame.draw.rect(self.screen, (40, 44, 52), (int(sx + gap // 2), int(leg_y), leg_w, leg_h))
-                boot_h = max(2, int(leg_h * 0.25))
-                pygame.draw.rect(self.screen, (20, 20, 25), (int(sx - leg_w - gap // 2), int(leg_y + leg_h - boot_h), leg_w, boot_h))
-                pygame.draw.rect(self.screen, (20, 20, 25), (int(sx + gap // 2), int(leg_y + leg_h - boot_h), leg_w, boot_h))
-
-                # --- 2. THÂN / NGƯỜI (BODY) ---
-                pygame.draw.rect(self.screen, (185, 45, 55), (int(sx - bw / 2), int(body_y), bw, body_h), border_radius=max(1, int(bw * 0.1)))
-                vest_w = max(4, int(bw * 0.72))
-                vest_h = max(3, int(body_h * 0.68))
-                pygame.draw.rect(self.screen, (55, 60, 72), (int(sx - vest_w / 2), int(body_y + 2), vest_w, vest_h), border_radius=2)
-
-                # --- 3. ĐẦU (HEAD) ---
-                hr = max(4, int(head_h * 0.48))
-                head_cx = int(sx)
-                head_cy = int(head_y + hr)
-                pygame.draw.circle(self.screen, (230, 185, 145), (head_cx, head_cy), hr)
-                pygame.draw.circle(self.screen, (45, 50, 60), (head_cx, head_cy - 1), hr, draw_top_left=True, draw_top_right=True)
-                visor_w = max(3, int(hr * 1.2))
-                visor_h = max(2, int(hr * 0.35))
-                pygame.draw.rect(self.screen, (30, 30, 35), (head_cx - visor_w // 2, head_cy - visor_h // 2, visor_w, visor_h))
-                pygame.draw.circle(self.screen, (240, 60, 60), (head_cx, head_cy), max(1, int(hr * 0.2)))
-
-                # --- THANH MÁU & GIÁP ---
-                bar_w = max(25, int(size * 0.8))
-                bx = int(sx - bar_w / 2)
-                by = int(btop - 18)
-                pygame.draw.rect(self.screen, (15, 18, 22), (bx - 1, by - 1, bar_w + 2, 7), border_radius=2)
-                pygame.draw.rect(self.screen, (60, 220, 100), (bx, by, int(bar_w * max(0, e.hp) / 100), 5), border_radius=1)
-                if getattr(e, "armor", 0) > 0:
-                    pygame.draw.rect(self.screen, (70, 150, 240), (bx, by - 4, int(bar_w * min(1.0, e.armor / 50)), 3), border_radius=1)
-
-                now_ms = pygame.time.get_ticks()
-                if hasattr(e, "last_hit_time") and now_ms - e.last_hit_time < 900:
-                    p_text = getattr(e, "last_hit_part", "body").upper()
-                    dmg_val = getattr(e, "last_hit_damage", 0)
-                    txt_col = (255, 60, 60) if p_text == "HEAD" else ((240, 200, 70) if p_text == "BODY" else (180, 190, 210))
-                    hit_surf = self.font_small.render(f"{p_text} -{int(dmg_val)}", True, txt_col)
-                    self.screen.blit(hit_surf, (sx - hit_surf.get_width() // 2, by - 20))
+                # Vẽ kẻ địch hình khối Roblox dạng người thật 3D
+                if hasattr(e, "draw_roblox_3d"):
+                    e.draw_roblox_3d(self.screen, sx, btop, bw, bh, self.font_small,
+                                     player=player, renderer=renderer, horizon=horizon)
+                else:
+                    # Dự phòng nếu không có hàm
+                    pygame.draw.rect(self.screen, (185, 45, 55), (int(sx - bw / 2), int(btop), bw, bh))
 
             elif itype == "smoke":
                 _, dist, sx, rad, s = item
