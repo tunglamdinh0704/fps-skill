@@ -1,26 +1,23 @@
 import pygame
 import os
 
-# 1. Khoi tao am thanh
-pygame.mixer.init()
+try:
+    pygame.mixer.init()
+except Exception:
+    pass
 
-# Thu muc noi sound.py dang dung
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_sound_cache = {}
 
-# 2. Ham phat am thanh tu file
 def play(file_name):
-    # Tim file trong thu muc sounds/
-    path = os.path.join(BASE_DIR, "sounds", file_name)
-    if not os.path.exists(path):
-        path = file_name # Thu duong dan nguoi dung truyen
-
-    # Phat am thanh
-    print(f">> Dang phat am thanh: {file_name}")
-    sound = pygame.mixer.Sound(path)
-    sound.play()
-
-# Chay thu truc tiep file nay
-if __name__ == '__main__':
-    play("fireball.wav")
-    pygame.time.delay(600)
-    print(">> Phat thanh cong!")
+    try:
+        if file_name not in _sound_cache:
+            path = os.path.join(BASE_DIR, 'sounds', file_name)
+            if not os.path.exists(path):
+                path = file_name
+            if os.path.exists(path):
+                _sound_cache[file_name] = pygame.mixer.Sound(path)
+        if file_name in _sound_cache:
+            _sound_cache[file_name].play()
+    except Exception:
+        pass
