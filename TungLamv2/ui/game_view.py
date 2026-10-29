@@ -83,7 +83,8 @@ class GameView:
 
     def render_frame(self, player, enemies, walls, renderer, minimap, hud, horizon,
                      game_state, round_timer, buy_timer, player_score, enemy_score,
-                     spike_carried, spike_planted, spike_timer, spike_max_time, hit_flash_timer, match_winner,
+                     spike_carried=False, spike_planted=False, spike_timer=0, spike_max_time=0,
+                     hit_flash_timer=0, match_winner=None,
                      smokes=None, fires=None, bomb_fuse=None, dropped_weapons=None):
         # 1. Thế giới 3D Raycasting
         renderer.render(self.screen, player, walls)
@@ -374,15 +375,10 @@ class GameView:
             by = 175
             pygame.draw.rect(self.screen, (10, 5, 5), (bx - 2, by - 2, bw + 4, bh + 4), border_radius=8)
             pygame.draw.rect(self.screen, box_col, (bx, by, bw, bh), border_radius=6)
-            w_txt = self.font_mid.render(f"BOM SẼ NỔ TRONG: {max(0.0, bomb_fuse):.1f}s", True, (255, 255, 255))
+            w_txt = self.font_mid.render(f"BOMB EXPLODES IN: {max(0.0, bomb_fuse):.1f}s", True, (255, 255, 255))
             self.screen.blit(w_txt, (self.width // 2 - w_txt.get_width() // 2, by + 10))
 
-        # 7. Giao diện Spike
-        if spike_carried:
-            self.screen.blit(self.font_mid.render("ĐANG GIỮ SPIKE", True, (240, 210, 70)), (24, 85))
-        elif spike_planted:
-            s_txt = self.font_mid.render(f"SPIKE NỔ SAU {max(0, spike_max_time - spike_timer):.1f}s", True, (220, 60, 70))
-            self.screen.blit(s_txt, (self.width // 2 - s_txt.get_width() // 2, 130))
+        # Spike UI removed
 
         # 8. Giao diện Mua sắm (Buy Phase) - Đặt ở tầng y=170 tách biệt khỏi Header tỷ số
         if game_state == "BUY":
@@ -390,13 +386,13 @@ class GameView:
             ov.fill((0, 0, 0, 75))
             self.screen.blit(ov, (0, 0))
 
-            t1 = self.font_big.render("GIAI ĐOẠN MUA SẮM", True, (245, 245, 245))
+            t1 = self.font_big.render("BUY PHASE", True, (245, 245, 245))
             self.screen.blit(t1, (self.width // 2 - t1.get_width() // 2, 170))
 
-            t2 = self.font_mid.render(f"Bắt đầu sau: {max(0, int(buy_timer))} giây", True, (255, 215, 60))
+            t2 = self.font_mid.render(f"Starts in: {max(0, int(buy_timer))}s", True, (255, 215, 60))
             self.screen.blit(t2, (self.width // 2 - t2.get_width() // 2, 225))
 
-            t3 = self.font_small.render("Ấn [B] để mở Cửa hàng mua vũ khí & trang bị", True, (215, 220, 230))
+            t3 = self.font_small.render("Press [B] to open Shop", True, (215, 220, 230))
             self.screen.blit(t3, (self.width // 2 - t3.get_width() // 2, 260))
 
         # 9. Màn hình nhấp nháy đỏ khi bị bắn trúng
@@ -419,5 +415,5 @@ class GameView:
             self.screen.blit(vic, (self.width // 2 - vic.get_width() // 2, self.height // 2 - 120))
             sc = self.font_hint.render(f"{player_score} - {enemy_score}", True, (235, 235, 235))
             self.screen.blit(sc, (self.width // 2 - sc.get_width() // 2, self.height // 2))
-            h_txt = self.font_hint.render("Nhấn F12 để chụp ảnh | Nhấn ENTER để chơi lại", True, (170, 175, 180))
+            h_txt = self.font_hint.render("Press F12 for Screenshot | Press ENTER to Play Again", True, (170, 175, 180))
             self.screen.blit(h_txt, (self.width // 2 - h_txt.get_width() // 2, self.height // 2 + 60))
