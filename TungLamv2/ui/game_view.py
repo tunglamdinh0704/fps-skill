@@ -1,6 +1,6 @@
 import pygame
 import math
-from game.map import line_blocked
+from game.map import line_blocked, check_smoke_blocks
 from graphics.weapon_skins import get_viewmodel_parts, get_dropped_skin
 from graphics.cs_viewmodel import CSViewModel
 
@@ -103,6 +103,8 @@ class GameView:
             if abs(rel_ang) > renderer.fov / 2:
                 continue
             if line_blocked(player.x, player.y, e.x, e.y):
+                continue
+            if check_smoke_blocks(player.x, player.y, e.x, e.y, smokes):
                 continue
             wall_dist = renderer.raycast(player, ang, walls)
             if dist >= wall_dist:

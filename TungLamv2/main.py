@@ -9,7 +9,7 @@ import sound
 from settings import WIDTH, HEIGHT, FPS, ROUND_TIME, BUY_TIME
 from game.player import Player
 from game.enemy import Enemy
-from game.map import walls, site_A, site_B, site_C, line_blocked
+from game.map import walls, site_A, site_B, site_C, line_blocked, check_smoke_blocks
 from game.weapon import get_weapon, get_weapon_damage
 from graphics.renderer import Renderer
 from graphics.minimap import Minimap
@@ -1000,8 +1000,7 @@ def player_shoot():
         if not e.alive:
             continue
         dist = math.hypot(e.x - player.x, e.y - player.y)
-        if (dist > wall_dist or dist > 1800 or line_blocked(player.x, player.y, e.x, e.y)
-                or smoke_blocks(player.x, player.y, e.x, e.y)):
+        if (dist > wall_dist or dist > 1800 or line_blocked(player.x, player.y, e.x, e.y)):
             continue
         h_ang = math.atan2(e.y - player.y, e.x - player.x)
         rel = angle_diff(h_ang, player.angle)
