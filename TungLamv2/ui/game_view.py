@@ -274,51 +274,14 @@ class GameView:
         cur_w = getattr(player, "weapon", "")
         is_scoped = getattr(player, "scoped", False)
 
-        if cur_w not in ("SMOKE", "MOLOTOV", "BOMB"):
-            if is_scoped:
-                # Khi đang bật kính ngắm (ADS / Scope), ẩn thân súng để tầm nhìn ngắm chuẩn xác
-                self.muzzle_x = self.width // 2
-                self.muzzle_y = self.height // 2
-            else:
-                self.muzzle_x, self.muzzle_y = self.cs_viewmodel.draw(
-                    self.screen, player, reload_drop, side_sway
-                )
-
-        elif cur_w == "SMOKE":
-            # Quả Smoke trên tay (bên phải hoặc trái theo righthand)
-            gx = (self.width // 2 + 120) if righthand else (self.width // 2 - 166)
-            gy = self.height - 130
-            pygame.draw.rect(self.screen, (75, 80, 90), (gx, gy, 46, 75), border_radius=6)
-            pygame.draw.rect(self.screen, (240, 210, 50), (gx, gy + 20, 46, 12))
-            pygame.draw.rect(self.screen, (50, 55, 62), (gx + 14, gy - 16, 18, 18), border_radius=3)
-            pygame.draw.circle(self.screen, (200, 200, 210), (gx + 10, gy - 8), 7, 2)
-            lbl = self.font_small.render("SMOKE", True, (240, 240, 245))
-            self.screen.blit(lbl, (gx - 5, gy + 36))
-
-        elif cur_w == "MOLOTOV":
-            # Chai Bom xăng trên tay
-            gx = (self.width // 2 + 120) if righthand else (self.width // 2 - 166)
-            gy = self.height - 140
-            pygame.draw.rect(self.screen, (40, 110, 70), (gx + 6, gy + 25, 42, 70), border_radius=8)
-            pygame.draw.rect(self.screen, (40, 110, 70), (gx + 20, gy, 14, 28))
-            pygame.draw.rect(self.screen, (200, 190, 170), (gx + 18, gy - 8, 18, 12))
-            fl_sz = int(12 + 5 * math.sin(pygame.time.get_ticks() * 0.02))
-            pygame.draw.circle(self.screen, (255, 120, 20), (gx + 27, gy - 16), fl_sz)
-            pygame.draw.circle(self.screen, (255, 230, 40), (gx + 27, gy - 16), max(2, fl_sz // 2))
-            lbl = self.font_small.render("MOLOTOV", True, (255, 200, 60))
-            self.screen.blit(lbl, (gx - 12, gy + 45))
-
-        elif cur_w == "BOMB":
-            # Quả bom hẹn giờ trên tay
-            gx = (self.width // 2 + 130) if righthand else (self.width // 2 - 170)
-            gy = self.height - 110
-            pygame.draw.circle(self.screen, (32, 35, 42), (gx + 20, gy + 20), 40)
-            pygame.draw.circle(self.screen, (60, 65, 75), (gx + 12, gy + 12), 12)
-            pygame.draw.rect(self.screen, (10, 12, 16), (gx - 2, gy + 8, 44, 22), border_radius=4)
-            f_val = f"{max(0.0, bomb_fuse):.1f}s" if (bomb_fuse is not None and bomb_fuse > 0) else "5.0s"
-            t_col = (255, 40, 40) if (pygame.time.get_ticks() // 200) % 2 == 0 else (255, 180, 40)
-            digi = self.font_small.render(f_val, True, t_col)
-            self.screen.blit(digi, (gx + 20 - digi.get_width() // 2, gy + 11))
+        if is_scoped and cur_w not in ("SMOKE", "MOLOTOV", "BOMB"):
+            # Khi đang bật kính ngắm (ADS / Scope), ẩn thân súng để tầm nhìn ngắm chuẩn xác
+            self.muzzle_x = self.width // 2
+            self.muzzle_y = self.height // 2
+        else:
+            self.muzzle_x, self.muzzle_y = self.cs_viewmodel.draw(
+                self.screen, player, reload_drop, side_sway, bomb_fuse
+            )
 
         # 4. Tia đạn (Tracers)
         now = pygame.time.get_ticks()
