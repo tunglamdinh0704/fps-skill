@@ -137,7 +137,11 @@ class CSViewModel:
                 "AWM",
                 "M24",
                 "AK-47",
+                "AK47",
+                "VANDAL",
                 "M416",
+                "PHANTOM",
+                "GUARDIAN",
                 "UMP",
                 "MP5"
             )
